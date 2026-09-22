@@ -18,6 +18,13 @@ OUT="${2:-out}"
 REPO="${RESQX_REPO:-https://raw.githubusercontent.com/okorojinosa-beep/design/main}"
 WORK="${RESQX_WORK:-$HOME/kit}"
 
+# Resolve a local spec path to absolute BEFORE changing directory — otherwise a relative
+# path is resolved against $WORK and a spec written anywhere else is simply not found.
+case "$SPEC" in
+  http*|/*) ;;
+  *) SPEC="$(cd "$(dirname "$SPEC")" && pwd)/$(basename "$SPEC")" ;;
+esac
+
 mkdir -p "$WORK/specs"
 cd "$WORK"
 
