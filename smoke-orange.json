@@ -1,0 +1,14 @@
+[
+  { "slug": "smoke-orange", "size": "feed", "frames": [
+    { "layout": "statement", "ground": "orange",
+      "headline": "Somebody Signed For The Last Delivery. <span class=\"o\">Nobody Can Tell You Who</span>.",
+      "sub": "Every litre that leaves a depot has a name against it. Most fleets cannot produce the name.",
+      "chips": ["Metered", "Signed for", "Reconciled"],
+      "kicker": "DM \"DIESEL\" or call 0201 887 0024." } ] },
+  { "slug": "smoke-orange-list", "size": "feed", "frames": [
+    { "layout": "method", "ground": "orange",
+      "headline": "Four Things To Check <span class=\"ring\">Before</span> You Sign",
+      "sub": "The driver waits. That is the whole point of the meter.",
+      "list": ["Meter reads zero before the hose moves","Seal number matches the docket","Your own dipstick, not theirs","Signature and time on both copies"],
+      "kicker": "Save this for the next delivery." } ] }
+]

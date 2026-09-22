@@ -1,0 +1,30 @@
+[
+  { "slug": "smoke-feature", "size": "feed", "frames": [
+    { "layout": "feature",
+      "headline": "The Friday Scramble <span class=\"o\">Has A Pattern</span>",
+      "sub": "It always starts with a gauge instead of a calendar.",
+      "list": ["Tank hits a quarter on Thursday","Nobody orders until it is urgent","The premium is paid on Friday"],
+      "kicker": "DM \"DIESEL\" to set a standing order." } ] },
+  { "slug": "smoke-statement", "size": "feed", "frames": [
+    { "layout": "statement",
+      "headline": "You Should Not Have To Take <span class=\"ul\">Anyone's Word</span> For It",
+      "sub": "Three businesses, one argument." } ] },
+  { "slug": "smoke-method", "size": "story", "frames": [
+    { "layout": "method",
+      "headline": "The First <span class=\"o\">Sixty Seconds</span> On A Hard Shoulder",
+      "sub": "Most people get out of the car. That is the error.",
+      "list": ["Hazards on before you brake","Stay belted until you are off the carriageway","Exit on the kerb side only","Triangle 45 metres back"],
+      "kicker": "Save this before you need it." } ] },
+  { "slug": "smoke-dark", "size": "feed", "frames": [
+    { "layout": "statement", "ground": "ink",
+      "headline": "A Pothole Does Not <span class=\"hi\">Warn You</span>",
+      "sub": "Lagos replaced 1,200 vehicle suspensions last year. Nobody scheduled any of them." } ] },
+  { "slug": "smoke-cover", "size": "feed", "frames": [
+    { "layout": "cover", "ground": "orange", "ghost": "FLEET",
+      "headline": "Fleet OS <span class=\"o\">Is Live</span>",
+      "sub": "See, understand, act, reconcile." } ] },
+  { "slug": "smoke-longword", "size": "story", "frames": [
+    { "layout": "statement",
+      "headline": "What Cracked Your <span class=\"o\">Windscreen?</span>",
+      "sub": "Testing the unbreakable-word guard at a grown size." } ] }
+]
