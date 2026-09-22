@@ -281,6 +281,7 @@ export function buildHTML(frame, sizeName, photoUris) {
 
   return {
     warn,
+    ground,   // the RESOLVED ground — QC's orange-collision checks depend on this
     html: `<!doctype html><html><head><meta charset="utf-8"><style>${css(size, ground, onPhoto)}</style></head>
 <body><div class="frame">
   ${bleedHtml}${ghost}
