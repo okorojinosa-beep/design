@@ -117,7 +117,7 @@ ${fontFace()}
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:${w}px;height:${h}px}
 body{font-family:'ResQX',system-ui,sans-serif;background:${groundFill(ground)};
-  ${ground === 'cream' || ground === 'orange' ? `background-image:${topo(w, h, ground)};background-size:cover;` : ''}
+  ${(ground === 'cream' || ground === 'orange') && !onPhoto ? `background-image:${topo(w, h, ground)};background-size:cover;` : ''}
   -webkit-font-smoothing:antialiased}
 .frame{position:relative;width:${w}px;height:${h}px;overflow:hidden;
   display:flex;flex-direction:column;padding:${padTop}px ${M}px ${padFoot}px}
@@ -192,7 +192,7 @@ h1.has-ring{line-height:1.22}   /* a ring ellipse is taller than the line box */
 .bleed{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
 .scrim{position:absolute;inset:0;z-index:1;
   background:linear-gradient(180deg,rgba(10,10,28,.30) 0%,rgba(10,10,28,.02) 34%,rgba(10,10,28,.80) 100%)}
-.frame>*{position:relative;z-index:2}
+.frame>.top,.frame>.mid,.frame>.cbar{position:relative;z-index:2}
 
 /* ── route report ── */
 .slab{background:${C.ink};color:${C.white};border-radius:30px;padding:38px 42px;
@@ -260,7 +260,10 @@ function midFor(f, size, ground, photoUris) {
 export function buildHTML(frame, sizeName, photoUris) {
   const size = SIZES[sizeName];
   if (!size) throw new Error(`unknown size "${sizeName}"`);
-  const ground = frame.ground || (frame.layout === 'cover' ? 'orange' : 'cream');
+  const ground = frame.ground
+    || (frame.layout === 'cover' ? 'orange'
+    : (frame.layout === 'photo' || frame.layout === 'route') ? 'night'
+    : 'cream');
   const bleed = (frame.layout === 'photo' || frame.layout === 'route') && photoUris?.[0];
   const onPhoto = frame.layout === 'photo';
 
