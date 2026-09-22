@@ -70,7 +70,13 @@ rm -f pack.zip contact-sheet.jpg
 zip -qj pack.zip ./*.png _report.json
 COUNT=$(ls -1 ./*.png | wc -l)
 TILE=$(( (COUNT + 2) / 3 )); [ "$TILE" -lt 1 ] && TILE=1
-montage ./*.png -tile "${TILE}x3" -geometry 300x375+6+6 -background '#8a8a8a' -quality 78 contact-sheet.jpg 2>/dev/null || true
+# Thumbnail FIRST, then montage the thumbnails. ImageMagick here is capped at 256MiB and
+# montaging a dozen full 1080x1350 PNGs in one pass aborts when Chromium still holds
+# memory from the render. Two cheap passes never do.
+rm -rf .thumbs && mkdir -p .thumbs
+for p in ./*.png; do convert "$p" -thumbnail 300x375 ".thumbs/$(basename "$p")" 2>/dev/null || true; done
+montage .thumbs/*.png -tile "${TILE}x3" -geometry +6+6 -background '#8a8a8a' -quality 78 contact-sheet.jpg 2>/dev/null || true
+rm -rf .thumbs
 printf '  %-46s %s bytes\n' pack.zip "$(stat -c%s pack.zip)"
 [ -f contact-sheet.jpg ] && printf '  %-46s %s bytes\n' contact-sheet.jpg "$(stat -c%s contact-sheet.jpg)"
 echo
