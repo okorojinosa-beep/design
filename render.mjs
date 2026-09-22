@@ -28,7 +28,14 @@ const MIME = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png',
 // Every image CDN is blocked by organisation egress policy (hard 403 on CONNECT):
 // unsplash, picsum, wikimedia, cloudfront, our own wasabi bucket. Do not re-test
 // this and do not add another host here without checking it first.
-const ALLOWED_HOSTS = new Set(['raw.githubusercontent.com']);
+// Default: only GitHub raw, which is all the Claude sandbox can reach. The Higgsfield
+// sandbox can also reach Higgsfield's own CDN, so a run there widens this via
+// RESQX_ALLOW_HOSTS (comma-separated). Widening it in the Claude sandbox does nothing
+// except turn a fast, clear failure into a slow one.
+const ALLOWED_HOSTS = new Set([
+  'raw.githubusercontent.com',
+  ...(process.env.RESQX_ALLOW_HOSTS || '').split(',').map(h => h.trim()).filter(Boolean),
+]);
 
 async function resolvePhoto(ref, baseDir) {
   if (!ref) return null;
@@ -98,7 +105,7 @@ async function main() {
       const uris = [];
       for (const ref of (f.photos || [])) uris.push(await resolvePhoto(ref, baseDir));
 
-      const { html, warn } = buildHTML(f, sizeName, uris);
+      const { html, warn, ground } = buildHTML(f, sizeName, uris);
       for (const wmsg of warn) { console.warn(`  ! ${wmsg}`); warnings++; }
 
       const page = await ctx.newPage();
@@ -135,7 +142,7 @@ async function main() {
       const flag = fit.clipped ? '  *** CLIPPED ***' : '';
       if (fit.clipped) warnings++;
       console.log(`  fill=${fit.fill} size=${fit.size}px lines=${fit.lines}${flag}`);
-      report.push({ name, layout: f.layout, ground: f.ground || 'cream', ...fit });
+      report.push({ name, layout: f.layout, ground, tall: size.tall, ...fit });
 
       const strings = [plain(f.headline)];
       if (f.sub)    strings.push(plain(f.sub));
