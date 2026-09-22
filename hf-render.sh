@@ -58,3 +58,20 @@ node qc.mjs "$OUT"
 echo
 echo "== files =="
 ls -1 "$OUT"/*.png | while read -r f; do printf '  %-46s %s bytes\n' "$(basename "$f")" "$(stat -c%s "$f")"; done
+
+# PACKAGING. Delivery is one presigned upload, not one per frame: a twelve-frame pack
+# means twelve ~2.5KB signed URLs have to be carried into this sandbox, which is both
+# expensive and easy to get wrong. Zip once, upload once.
+# The contact sheet is the cheap visual check when a human IS around to look.
+echo
+echo "== pack =="
+cd "$OUT"
+rm -f pack.zip contact-sheet.jpg
+zip -qj pack.zip ./*.png _report.json
+COUNT=$(ls -1 ./*.png | wc -l)
+TILE=$(( (COUNT + 2) / 3 )); [ "$TILE" -lt 1 ] && TILE=1
+montage ./*.png -tile "${TILE}x3" -geometry 300x375+6+6 -background '#8a8a8a' -quality 78 contact-sheet.jpg 2>/dev/null || true
+printf '  %-46s %s bytes\n' pack.zip "$(stat -c%s pack.zip)"
+[ -f contact-sheet.jpg ] && printf '  %-46s %s bytes\n' contact-sheet.jpg "$(stat -c%s contact-sheet.jpg)"
+echo
+echo "Upload these two with media_upload, PUT them from this sandbox, then media_confirm."
