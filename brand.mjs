@@ -106,12 +106,45 @@ export function topo(w, h, ground) {
 }
 
 // ── Wordmark ─────────────────────────────────────────────────────────────────
-// "RESQ" + "X" with three trailing motion streaks.
-// TRAP: the streaks must DESCEND — top .66em, middle .44em, bottom .24em. Near-equal
-// trails with the longest in the middle read as an equals sign. Fixed twice; root
-// cause was never the markup.
-// TRAP: RESQ and X must sit in ONE span. Two flex children with a gap reads "RESQ X".
-export function wordmark(on = 'cream', px = 34) {
+// THE REAL LOGO. Not a reconstruction.
+//
+// Until 23 Sep this was the letters RESQ + X set in Figtree with three hand-drawn
+// streaks beside them. It read close, but it was never the mark: the X is custom,
+// its speed lines are part of the glyph, and the letter widths do not match a
+// typeface. What follows is the actual brand vector (Drive: final-logo.svg).
+//
+// TRAP: it is INLINED here, not read from assets/. hf-render.sh curls exactly five
+// files out of the repo and assets/ is not among them, so a file read would resolve
+// to nothing inside the Higgsfield sandbox and this function would quietly fall back
+// to a lookalike on every unattended run. A logo that is only sometimes the real one
+// is worse than one that never is. assets/brand/logo.svg holds the same bytes and is
+// there for humans; this constant is what renders.
+//
+// TRAP: the streaks are PART OF THE MARK. Never add streak elements beside it.
+// TRAP: two path groups, two colours — #FF8500 is RESQ, #0A0A1C is the X. BOTH swap
+// per ground. An orange RESQ on an orange ground is an invisible RESQ, which is
+// exactly the bug that shipped on 6 Sep.
+const LOGO_SVG = String.raw`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1371.14 255.71" role="img" aria-label="ResQ-X">
+  <g id="rx-resq" fill="#FF8500">
+    <path d="M144.56,213.69L39.69,148.51v65.18H0V34.44H140.35c50.2,0,70.7,10.78,70.7,53.88v12.35c0,41.53-22.34,52.3-71.23,52.3h-31.54l105.13,60.71h-68.86Zm26.55-123.27c0-19.19-7.1-22.34-33.38-22.34H39.69v54.67h98.04c25.76,0,33.38-3.15,33.38-22.6v-9.72Z"/>
+    <path d="M302.78,213.69c-52.83,0-68.34-16.3-68.34-61.5v-56.25c0-45.21,15.51-61.5,68.34-61.5h44.16v33.91h-44.16c-23.13,0-28.65,6.83-28.65,27.6v12.09h152.71v31.8h-152.71v12.62c0,21.55,5.26,27.33,28.65,27.33h125.11v33.91h-125.11Z"/>
+    <path d="M448.39,213.69v-33.91h136.15c14.19,0,20.24-3.15,20.24-15.24v-9.72c0-11.3-6.05-15.51-19.98-15.51h-85.42c-40.21,0-50.73-14.72-50.73-45.47v-8.94c0-36.8,14.72-50.46,50.73-50.46h55.72v33.91h-52.04c-12.09,0-17.87,3.68-17.87,17.87v5.78c0,11.3,4.73,15.51,17.61,15.51h83.84c39.95,0,54.67,13.14,54.67,45.47v14.19c0,33.38-14.72,46.52-54.67,46.52h-138.25Z"/>
+    <path d="M834.23,239.45l-25.76-27.6h-75.17c-53.09,0-68.6-15.24-68.6-60.45v-55.46c0-45.21,15.51-61.5,68.6-61.5h68.07c53.09,0,68.6,16.3,68.6,61.5v55.46c0,26.28-5.26,42.58-20.5,51.52l33.91,36.53h-49.15Zm-4.21-141.67c0-22.34-6.83-28.91-30.23-28.91h-64.66c-25.23,0-30.49,6.57-30.49,28.91v45.73c0,28.39,3.15,35.22,30.49,35.22h64.66c23.39,0,30.23-5.52,30.23-28.91v-52.04Z"/>
+  </g>
+  <g id="rx-x" fill="#0A0A1C">
+    <path d="M1371.14,197.6c0,3.21-1.31,6.11-3.41,8.22-2.1,2.09-5.01,3.4-8.22,3.4h-169.23c-3.21,0-6.11,1.31-8.22,3.4-2.1,2.1-3.4,5.02-3.4,8.23,0,6.42,5.2,11.62,11.62,11.62h95.91c6.42,0,11.62,5.21,11.62,11.63,0,3.21-1.31,6.11-3.4,8.22-2.1,2.1-5.01,3.41-8.22,3.41h-99.02l-105.36-97.86-104.98,97.86h-79.48l146.97-132.36L905.6,0h82.11l97.49,90.73L1187.93,0h142.45c6.43,0,11.63,5.21,11.63,11.63,0,3.21-1.29,6.11-3.4,8.22-2.1,2.1-5.01,3.41-8.23,3.41h-134.68c-3.21,0-6.11,1.29-8.22,3.4-2.1,2.1-3.4,5.01-3.4,8.22,0,6.42,5.2,11.63,11.62,11.63h71.18c6.43,0,11.63,5.2,11.63,11.62,0,3.22-1.31,6.12-3.4,8.23-2.1,2.1-5.02,3.4-8.23,3.4h-112.06c-3.21,0-6.11,1.29-8.22,3.4-2.1,2.1-3.4,5.01-3.4,8.23,0,6.42,5.2,11.62,11.62,11.62h175.56c6.43,0,11.63,5.2,11.63,11.63,0,3.21-1.29,6.11-3.4,8.22-2.1,2.1-5.01,3.4-8.23,3.4h-194.37c-.61,0-1.19-.04-1.78-.14h-.01l-.15,.14h-10.37c-3.21,0-6.11,1.31-8.22,3.41-2.1,2.1-3.41,5.01-3.41,8.22,0,6.42,5.21,11.63,11.63,11.63h148.61c6.42,0,11.62,5.2,11.62,11.62,0,3.21-1.31,6.11-3.4,8.22-2.1,2.1-5.01,3.41-8.22,3.41h-118.94c-3.21,0-6.12,1.31-8.23,3.4-2.09,2.1-3.4,5.01-3.4,8.22,0,6.43,5.2,11.63,11.63,11.63h206.13c6.42,0,11.63,5.2,11.63,11.63Z"/>
+    <path d="M1349.61,151.1c0,3.21-1.31,6.11-3.4,8.22-2.1,2.1-5.02,3.41-8.23,3.41h-38.08c-6.42,0-11.62-5.21-11.62-11.63,0-3.21,1.31-6.11,3.4-8.22,2.1-2.1,5.01-3.4,8.22-3.4h38.08c6.43,0,11.63,5.2,11.63,11.62Z"/>
+  </g>
+</svg>`;
+
+// The artboard is 1371.14 × 255.71, but the RESQ caps only occupy the middle 80% of
+// that height — the X deliberately breaks the cap line top and bottom — and the
+// letterforms are lighter than the bold Figtree they replaced. Both pull the mark
+// optically small. 1.15em is what lands it level with the two-line site badge across
+// the frame; .9em (the naive cap-height match) sits visibly light, 1.3em crowds.
+const LOGO_W = 1371.14, LOGO_H = 255.71;
+
+export function wordmark(on = "cream", px = 34) {
   const pair = {
     cream:  [C.orange, C.ink],
     dark:   [C.white,  C.orange],
@@ -120,16 +153,16 @@ export function wordmark(on = 'cream', px = 34) {
     orange: [C.white,  C.ink],
   }[on] || [C.orange, C.ink];
   const [resq, x] = pair;
-  const streak = (w, o) =>
-    `<i style="display:block;width:${w}em;height:.055em;border-radius:9999px;background:${x};opacity:${o};margin-left:auto"></i>`;
-  return `<div class="wm" style="font-size:${px}px">
-    <span class="wm-w" style="font-weight:800;letter-spacing:-.03em;line-height:1;white-space:nowrap">
-      <span style="color:${resq}">RESQ</span><span style="color:${x}">X</span>
-    </span>
-    <span class="wm-s" style="display:flex;flex-direction:column;gap:.085em;justify-content:center;margin-left:.16em">
-      ${streak(0.78, 1)}${streak(0.46, 0.60)}${streak(0.20, 0.30)}
-    </span>
-  </div>`;
+
+  const h = px * 1.15;
+  const w = h * (LOGO_W / LOGO_H);
+
+  const svg = LOGO_SVG
+    .replace("#FF8500", resq)
+    .replace("#0A0A1C", x)
+    .replace("<svg ", `<svg width="${w.toFixed(1)}" height="${h.toFixed(1)}" style="display:block" `);
+
+  return `<div class="wm">${svg}</div>`;
 }
 
 // ── Site badge, top-right ────────────────────────────────────────────────────
