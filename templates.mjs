@@ -101,7 +101,7 @@ export function buildHeadline(html) {
 }
 
 // ── CSS ──────────────────────────────────────────────────────────────────────
-function css(size, ground, onPhoto) {
+export function css(size, ground, onPhoto) {
   const { w, h, tall } = size;
   const M = 62;
   const padTop  = M + (tall ? 120 : 0);
