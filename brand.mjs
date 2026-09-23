@@ -113,8 +113,8 @@ export function topo(w, h, ground) {
 // its speed lines are part of the glyph, and the letter widths do not match a
 // typeface. What follows is the actual brand vector (Drive: final-logo.svg).
 //
-// TRAP: it is INLINED here, not read from assets/. hf-render.sh curls exactly five
-// files out of the repo and assets/ is not among them, so a file read would resolve
+// TRAP: it is INLINED here, not read from assets/. hf-render.sh curls a fixed list of
+// code files out of the repo and assets/ is not among them, so a file read would resolve
 // to nothing inside the Higgsfield sandbox and this function would quietly fall back
 // to a lookalike on every unattended run. A logo that is only sometimes the real one
 // is worse than one that never is. assets/brand/logo.svg holds the same bytes and is
