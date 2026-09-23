@@ -180,9 +180,43 @@ on proportion, the double-storey `a` and the open `S`. Drop
 `assets/fonts/general-sans-variable.woff2` into this repo and `brand.mjs` picks it up with
 no code change.
 
-The wordmark is a close SVG reconstruction. **The real vector is still an open ask.** The
-three motion streaks must DESCEND — near-equal trails with the longest in the middle read as
-an equals sign, which was fixed twice before the root cause was found.
+### The logo is the real vector, and it goes on everything
+
+`brand.mjs` carries the actual ResQ-X mark as `LOGO_SVG`, and the same bytes sit at
+`assets/brand/logo.svg` for humans. It is **inlined in code on purpose** — `hf-render.sh`
+curls a fixed list of code files and `assets/` is not among them, so a file read would
+quietly fall back to a lookalike on every unattended run. A logo that is only sometimes the
+real one is worse than one that never is.
+
+Two path groups, two colours, both swapped by the ground:
+
+| ground | RESQ | X |
+|---|---|---|
+| cream | orange | ink |
+| dark / night / ink | white | orange |
+| orange | white | ink |
+
+Set at **1.15em**, which lands it level with the two-line site badge. `.9em` — the naive
+cap-height match — reads visibly light; `1.3em` crowds. **The three speed streaks are part
+of the X glyph.** Never add streak elements beside it; the old reconstruction did, and the
+trails had to descend or they read as an equals sign.
+
+**Every ResQ-X visual carries this mark** — kit frames, Higgsfield output, ad creative,
+thumbnails, covers. `stamp.mjs` is the command for anything that is not a frame:
+
+```
+node stamp.mjs <image-url-or-path> out.png [--size auto|feed|story|reel|square] [--bar] [--no-badge]
+```
+
+`--size auto` (the default) keeps the image's own shape, so a 1:1 generation stays square
+and a 9:16 stays 9:16. The mark is always set on the `dark` pair over a scrim, because a
+photograph's local brightness is unknowable and white-on-scrim is the one combination that
+survives both a bright sky and a night expressway.
+
+**Higgsfield is never asked to draw the logo.** A generative model mangles lettering, which
+is why every prompt ends "No text, no lettering, no logos, no watermark". The photograph is
+generated; the mark is composited in code. A logo inside a generated image means that image
+is wrong — regenerate it, do not retouch it.
 
 `₦` (U+20A6) is in Figtree and renders correctly at weight 800. No fallback needed.
 
