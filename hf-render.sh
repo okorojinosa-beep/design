@@ -29,7 +29,7 @@ mkdir -p "$WORK/specs"
 cd "$WORK"
 
 echo "== kit =="
-for f in brand.mjs templates.mjs render.mjs qc.mjs; do
+for f in brand.mjs templates.mjs render.mjs qc.mjs sheet.py; do
   curl -fsS -o "$f" "$REPO/$f"
   printf '  %-16s %s bytes\n' "$f" "$(stat -c%s "$f")"
 done
@@ -63,28 +63,20 @@ echo "== QC =="
 node qc.mjs "$OUT"
 
 echo
+echo "== pack =="
+# Delivery is ONE presigned upload, not one per frame: a twelve-frame pack would mean
+# twelve ~2.5KB signed URLs carried into this sandbox, which is wasteful and easy to
+# get wrong. Zip once, upload once.
+( cd "$OUT" && rm -f pack.zip contact-sheet.jpg && zip -qj pack.zip ./*.png _report.json )
+python3 sheet.py "$OUT" "$OUT/contact-sheet.jpg" || true
+
+echo
 echo "== files =="
 ls -1 "$OUT"/*.png | while read -r f; do printf '  %-46s %s bytes\n' "$(basename "$f")" "$(stat -c%s "$f")"; done
+printf '  %-46s %s bytes\n' pack.zip "$(stat -c%s "$OUT/pack.zip")"
+[ -f "$OUT/contact-sheet.jpg" ] && printf '  %-46s %s bytes\n' contact-sheet.jpg "$(stat -c%s "$OUT/contact-sheet.jpg")"
 
-# PACKAGING. Delivery is one presigned upload, not one per frame: a twelve-frame pack
-# means twelve ~2.5KB signed URLs have to be carried into this sandbox, which is both
-# expensive and easy to get wrong. Zip once, upload once.
-# The contact sheet is the cheap visual check when a human IS around to look.
 echo
-echo "== pack =="
-cd "$OUT"
-rm -f pack.zip contact-sheet.jpg
-zip -qj pack.zip ./*.png _report.json
-COUNT=$(ls -1 ./*.png | wc -l)
-TILE=$(( (COUNT + 2) / 3 )); [ "$TILE" -lt 1 ] && TILE=1
-# Thumbnail FIRST, then montage the thumbnails. ImageMagick here is capped at 256MiB and
-# montaging a dozen full 1080x1350 PNGs in one pass aborts when Chromium still holds
-# memory from the render. Two cheap passes never do.
-rm -rf .thumbs && mkdir -p .thumbs
-for p in ./*.png; do convert "$p" -thumbnail 300x375 ".thumbs/$(basename "$p")" 2>/dev/null || true; done
-montage .thumbs/*.png -tile "${TILE}x3" -geometry +6+6 -background '#8a8a8a' -quality 78 contact-sheet.jpg 2>/dev/null || true
-rm -rf .thumbs
-printf '  %-46s %s bytes\n' pack.zip "$(stat -c%s pack.zip)"
-[ -f contact-sheet.jpg ] && printf '  %-46s %s bytes\n' contact-sheet.jpg "$(stat -c%s contact-sheet.jpg)"
-echo
-echo "Upload these two with media_upload, PUT them from this sandbox, then media_confirm."
+echo "Absolute output dir: $(cd "$OUT" && pwd)"
+echo "Upload pack.zip and contact-sheet.jpg with media_upload, PUT both from the SAME"
+echo "sandbox_exec command that has the bytes, then media_confirm."
