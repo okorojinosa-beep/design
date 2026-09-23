@@ -29,7 +29,7 @@ mkdir -p "$WORK/specs"
 cd "$WORK"
 
 echo "== kit =="
-for f in brand.mjs templates.mjs render.mjs qc.mjs sheet.py; do
+for f in brand.mjs templates.mjs media.mjs render.mjs stamp.mjs qc.mjs sheet.py; do
   curl -fsS -o "$f" "$REPO/$f"
   printf '  %-16s %s bytes\n' "$f" "$(stat -c%s "$f")"
 done
