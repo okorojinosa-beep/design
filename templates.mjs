@@ -151,7 +151,11 @@ body{font-family:'ResQX',system-ui,sans-serif;background:${groundFill(ground)};
 .col{display:flex;flex-direction:column;row-gap:${gapBase}px;min-width:0;flex:1 1 auto}
 
 h1{font-weight:900;letter-spacing:-.028em;line-height:1.04;color:${tx}}
-h1.has-ring{line-height:1.22}   /* a ring ellipse is taller than the line box */
+h1.has-ring{line-height:1.22;padding-right:.16em}
+/* a ring ellipse is taller than its line box AND .10em wider than its span on each side.
+   The extra line-height stops it cutting the line above; the padding stops a ring that
+   ends a line running off the canvas. The wide() guard cannot see either — the mark is
+   ::after and absolutely positioned, so it contributes nothing to any bounding rect. */
 .sub{font-weight:500;font-size:${tall ? 35 : 31}px;line-height:1.34;color:${sub};max-width:22em}
 
 /* ── emphasis marks — exactly one per frame ── */
@@ -191,7 +195,7 @@ h1.has-ring{line-height:1.22}   /* a ring ellipse is taller than the line box */
 /* ── full-bleed photo layout ── */
 .bleed{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
 .scrim{position:absolute;inset:0;z-index:1;
-  background:linear-gradient(180deg,rgba(10,10,28,.30) 0%,rgba(10,10,28,.02) 34%,rgba(10,10,28,.80) 100%)}
+  background:linear-gradient(180deg,rgba(10,10,28,.52) 0%,rgba(10,10,28,.06) 30%,rgba(10,10,28,.82) 100%)}
 .frame>.top,.frame>.mid,.frame>.cbar{position:relative;z-index:2}
 
 /* ── route report ── */
@@ -340,7 +344,13 @@ export function FIT_FN(opts) {
     // scrollWidth (collapsing every ringed frame to minimum type) while contributing
     // nothing to a bounding rect. Compare the SPAN's rect against the headline's.
     for (const s of hl.querySelectorAll('.o,.hi,.ring,.ul')) {
-      if (s.getBoundingClientRect().right > hr.right + 0.5) return true;
+      // A ring's ::after sits .10em outside the span on each side and a ul swoosh sits
+      // flush. Neither shows up in a bounding rect, so add the known overhang by hand
+      // rather than pretending the rect is the whole story.
+      const over = s.classList.contains('ring')
+        ? parseFloat(getComputedStyle(s).fontSize) * 0.12
+        : 0;
+      if (s.getBoundingClientRect().right + over > hr.right + 0.5) return true;
     }
     // Blocks wrap normally, so scrollWidth is the right test for them.
     for (const b of mid.querySelectorAll('.nl-tx,.sub,.chip,.kicker')) {
